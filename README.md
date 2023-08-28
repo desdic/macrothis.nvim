@@ -53,6 +53,8 @@ require("telescope").extensions = {
 | &lt;CR&gt; | Load selected entry into register |
 | &lt;C-d&gt; | Delete selected entry or delete all marked entries |
 | &lt;C-s&gt; | Save a macro/register |
+| &lt;C-r&gt; | Run macro |
+| &lt;C-q&gt; | Run macro on files in quickfix list |
 
 Shortcuts, sorters and more can be overridden via telescope options for this plugin.
 

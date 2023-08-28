@@ -19,6 +19,8 @@ local default_telescope = {
         load = "<CR>",
         save = "<C-s>",
         delete = "<C-d>",
+        run = "<C-r>",
+        quickfix = "<C-q>",
     },
     sorter = sorters.get_generic_fuzzy_sorter,
     items_display = {
@@ -37,6 +39,7 @@ local default_telescope = {
             { remaining = true },
         },
     },
+    run_register = "z", -- content of register z is replaced when running a macro
 }
 --minidoc_afterlines_end
 
@@ -190,6 +193,31 @@ local save_macro = function(_)
         :find()
 end
 
+local run_macro = function(prompt_bufnr)
+    local selected_register = action_state.get_selected_entry()
+
+    actions.close(prompt_bufnr)
+
+    utils.run_macro(
+        macrothis.opts,
+        macrothis.telescope_config.run_register,
+        selected_register.value.label
+    )
+end
+
+local run_macro_on_quickfixlist = function(prompt_bufnr)
+    local selected_register = action_state.get_selected_entry()
+
+    actions.close(prompt_bufnr)
+    vim.cmd("cclose")
+
+    utils.run_macro_on_quickfixlist(
+        macrothis.opts,
+        macrothis.telescope_config.run_register,
+        selected_register.value.label
+    )
+end
+
 local run = function(opts)
     macrothis.telescope_config.opts = opts
     local picker = pickers.new(opts, {
@@ -200,6 +228,12 @@ local run = function(opts)
             map("i", macrothis.telescope_config.mappings.load, load_macro)
             map("i", macrothis.telescope_config.mappings.delete, delete_macro)
             map("i", macrothis.telescope_config.mappings.save, save_macro)
+            map("i", macrothis.telescope_config.mappings.run, run_macro)
+            map(
+                "i",
+                macrothis.telescope_config.mappings.quickfix,
+                run_macro_on_quickfixlist
+            )
             return true
         end,
     })

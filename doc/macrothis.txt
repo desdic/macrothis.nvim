@@ -81,6 +81,8 @@ Default telescope options
           load = "<CR>",
           save = "<C-s>",
           delete = "<C-d>",
+          run = "<C-r>",
+          quickfix = "<C-q>",
       },
       sorter = sorters.get_generic_fuzzy_sorter,
       items_display = {
@@ -99,6 +101,7 @@ Default telescope options
               { remaining = true },
           },
       },
+      run_register = "z", -- content of register z is replaced when running a macro
   }
 <
 
