@@ -12,16 +12,23 @@ Using Lazy plugin manager
         {
             "<Leader>kks",
             function()
-                require('macrothis').save_dialog()
+                require('macrothis').save()
             end,
             desc = "save register/macro"
         },
         {
             "<Leader>kkl",
             function()
-                require('macrothis').load_dialog()
+                require('macrothis').load()
             end,
             desc = "load register/macro"
+        },
+        {
+            "<Leader>kkd",
+            function()
+                require('macrothis').delete()
+            end,
+            desc = "delete register/macro"
         }
     }
 },
@@ -52,11 +59,11 @@ Usage~
 `require('macrothis').delete()`
 
 ------------------------------------------------------------------------------
-                                                                      *defaults*
-                                   `defaults`
+                                                                       *default*
+                                   `default`
 Default options
 >
-  local defaults = {
+  local default = {
       datafile = vim.fn.stdpath("data") .. "/macrothis.json",
       registers = generate_register_list(),
   }
