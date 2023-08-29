@@ -209,7 +209,6 @@ local run_macro_on_quickfixlist = function(prompt_bufnr)
     local selected_register = action_state.get_selected_entry()
 
     actions.close(prompt_bufnr)
-    vim.cmd("cclose")
 
     utils.run_macro_on_quickfixlist(
         macrothis.opts,
