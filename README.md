@@ -20,6 +20,8 @@ Works with or without telescope.
         { "<Leader>kks", function() require('macrothis').save() end, desc = "save register" },
         { "<Leader>kkl", function() require('macrothis').load() end, desc = "load register" }
         { "<Leader>kkd", function() require('macrothis').delete() end, desc = "delete register" }
+        { "<Leader>kkr", function() require('macrothis').run() end, desc = "run macro" }
+        { "<Leader>kkq", function() require('macrothis').quickfix() end, desc = "run macro on all files in quickfix" }
     }
 },
 ```
