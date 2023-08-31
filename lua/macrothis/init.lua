@@ -25,6 +25,20 @@
 ---                 require('macrothis').delete()
 ---             end,
 ---             desc = "delete register/macro"
+---         },
+---         {
+---             "<Leader>kkq",
+---             function()
+---                 require('macrothis').quickfix()
+---             end,
+---             desc = "run on quickfix list"
+---         },
+---         {
+---             "<Leader>kkr",
+---             function()
+---                 require('macrothis').run()
+---             end,
+---             desc = "run macro"
 ---         }
 ---     }
 --- },
@@ -86,9 +100,18 @@ macrothis.save = function()
         end,
     }, function(register, _)
         if register then
-            local description = vim.fn.input("Enter description: ", "")
-            utils.store_register(macrothis.opts, register.value, description)
-            macrothis.opts.last_used = description
+            vim.ui.input(
+                { prompt = "Enter description: " },
+                function(description)
+                    print(vim.inspect(register))
+                    utils.store_register(
+                        macrothis.opts,
+                        register.label,
+                        description
+                    )
+                    macrothis.opts.last_used = description
+                end
+            )
         end
     end)
 end
@@ -151,6 +174,52 @@ macrothis.delete = function()
     end)
 end
 
+--- Run macro
+---
+---@usage `require('macrothis').run()`
+macrothis.run = function()
+    local menuelem = macrothis.generate_menu_items()
+
+    vim.ui.select(menuelem, {
+        prompt = "Run on quickfix list",
+        format_item = function(item)
+            return ("%s: %s"):format(item.label, item.value)
+        end,
+    }, function(description, _)
+        if description then
+            utils.run_macro(
+                macrothis.opts,
+                macrothis.opts.run_register,
+                description.label
+            )
+            macrothis.opts.last_used = description.label
+        end
+    end)
+end
+
+--- Run macro on all in quickfix list
+---
+---@usage `require('macrothis').quickfix()`
+macrothis.quickfix = function()
+    local menuelem = macrothis.generate_menu_items()
+
+    vim.ui.select(menuelem, {
+        prompt = "Run on quickfix list",
+        format_item = function(item)
+            return ("%s: %s"):format(item.label, item.value)
+        end,
+    }, function(description, _)
+        if description then
+            utils.run_macro_on_quickfixlist(
+                macrothis.opts,
+                macrothis.opts.run_register,
+                description.label
+            )
+            macrothis.opts.last_used = description.label
+        end
+    end)
+end
+
 local generate_register_list = function()
     local registers_table = { '"', "-", "#", "=", "/", "*", "+", ":", ".", "%" }
 
@@ -172,6 +241,7 @@ end
 local default = {
     datafile = vim.fn.stdpath("data") .. "/macrothis.json",
     registers = generate_register_list(),
+    run_register = "z", -- content of register z is replaced when running a macro
 }
 --minidoc_afterlines_end
 

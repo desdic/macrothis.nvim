@@ -29,6 +29,20 @@ Using Lazy plugin manager
                 require('macrothis').delete()
             end,
             desc = "delete register/macro"
+        },
+        {
+            "<Leader>kkq",
+            function()
+                require('macrothis').quickfix()
+            end,
+            desc = "run on quickfix list"
+        },
+        {
+            "<Leader>kkr",
+            function()
+                require('macrothis').run()
+            end,
+            desc = "run macro"
         }
     }
 },
@@ -59,6 +73,22 @@ Usage~
 `require('macrothis').delete()`
 
 ------------------------------------------------------------------------------
+                                                               *macrothis.run()*
+                               `macrothis.run`()
+Run macro
+
+Usage~
+`require('macrothis').run()`
+
+------------------------------------------------------------------------------
+                                                          *macrothis.quickfix()*
+                             `macrothis.quickfix`()
+Run macro on all in quickfix list
+
+Usage~
+`require('macrothis').quickfix()`
+
+------------------------------------------------------------------------------
                                                                        *default*
                                    `default`
 Default options
@@ -66,6 +96,7 @@ Default options
   local default = {
       datafile = vim.fn.stdpath("data") .. "/macrothis.json",
       registers = generate_register_list(),
+      run_register = "z", -- content of register z is replaced when running a macro
   }
 <
 
@@ -101,7 +132,6 @@ Default telescope options
               { remaining = true },
           },
       },
-      run_register = "z", -- content of register z is replaced when running a macro
   }
 <
 

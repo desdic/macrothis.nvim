@@ -39,7 +39,6 @@ local default_telescope = {
             { remaining = true },
         },
     },
-    run_register = "z", -- content of register z is replaced when running a macro
 }
 --minidoc_afterlines_end
 
@@ -200,7 +199,7 @@ local run_macro = function(prompt_bufnr)
 
     utils.run_macro(
         macrothis.opts,
-        macrothis.telescope_config.run_register,
+        macrothis.opts.run_register,
         selected_register.value.label
     )
 end
@@ -212,7 +211,7 @@ local run_macro_on_quickfixlist = function(prompt_bufnr)
 
     utils.run_macro_on_quickfixlist(
         macrothis.opts,
-        macrothis.telescope_config.run_register,
+        macrothis.opts.run_register,
         selected_register.value.label
     )
 end
