@@ -19,7 +19,7 @@ Works with or without telescope.
     keys = {
         { "<Leader>kks", function() require('macrothis').save() end, desc = "save register" },
         { "<Leader>kkl", function() require('macrothis').load() end, desc = "load register" }
-        { "<Leader>kkd", function() require('macrothis').delete() end, desc = "load register" }
+        { "<Leader>kkd", function() require('macrothis').delete() end, desc = "delete register" }
     }
 },
 ```
