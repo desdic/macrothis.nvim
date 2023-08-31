@@ -103,7 +103,6 @@ macrothis.save = function()
             vim.ui.input(
                 { prompt = "Enter description: " },
                 function(description)
-                    print(vim.inspect(register))
                     utils.store_register(
                         macrothis.opts,
                         register.label,
