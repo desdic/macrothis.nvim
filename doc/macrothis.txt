@@ -89,6 +89,22 @@ Usage~
 `require('macrothis').quickfix()`
 
 ------------------------------------------------------------------------------
+                                                              *macrothis.edit()*
+                               `macrothis.edit`()
+Edit macro
+
+Usage~
+`require('macrothis').edit()`
+
+------------------------------------------------------------------------------
+                                                            *macrothis.rename()*
+                              `macrothis.rename`()
+Rename macro
+
+Usage~
+`require('macrothis').rename()`
+
+------------------------------------------------------------------------------
                                                                        *default*
                                    `default`
 Default options
@@ -96,7 +112,13 @@ Default options
   local default = {
       datafile = vim.fn.stdpath("data") .. "/macrothis.json",
       registers = generate_register_list(),
-      run_register = "z", -- content of register z is replaced when running a macro
+      run_register = "z", -- content of register z is replaced when running/editing a macro
+      editor = { -- Edit window
+          width = 100,
+          height = 2,
+          style = "minimal",
+          border = "rounded",
+      },
   }
 <
 
@@ -113,6 +135,8 @@ Default telescope options
           save = "<C-s>",
           delete = "<C-d>",
           run = "<C-r>",
+          rename = "<C-n>",
+          edit = "<C-e>",
           quickfix = "<C-q>",
       },
       sorter = sorters.get_generic_fuzzy_sorter,

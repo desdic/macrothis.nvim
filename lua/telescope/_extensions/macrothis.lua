@@ -20,6 +20,8 @@ local default_telescope = {
         save = "<C-s>",
         delete = "<C-d>",
         run = "<C-r>",
+        rename = "<C-n>",
+        edit = "<C-e>",
         quickfix = "<C-q>",
     },
     sorter = sorters.get_generic_fuzzy_sorter,
@@ -146,19 +148,24 @@ local load_macro = function(_)
 end
 
 local delete_macro = function(prompt_bufnr)
-    local confirmation = vim.fn.input("Confirm deletion? [y/n]: ")
-    if
-        string.len(confirmation) == 0
-        or string.sub(string.lower(confirmation), 0, 1) ~= "y"
-    then
-        print("cancelled")
-        return
-    end
+    -- use input while we wait for vim.ui.confirm
+    vim.ui.input(
+        { prompt = "Confirm deletion? [y/n]: " },
+        function(confirmation)
+            if
+                string.len(confirmation) == 0
+                or string.sub(string.lower(confirmation), 0, 1) ~= "y"
+            then
+                print("cancelled")
+                return
+            end
 
-    local current_picker = action_state.get_current_picker(prompt_bufnr)
-    current_picker:delete_selection(function(selection)
-        utils.remove_entry(macrothis.opts, selection.value.label)
-    end)
+            local current_picker = action_state.get_current_picker(prompt_bufnr)
+            current_picker:delete_selection(function(selection)
+                utils.remove_entry(macrothis.opts, selection.value.label)
+            end)
+        end
+    )
 end
 
 local save_macro = function(_)
@@ -176,14 +183,18 @@ local save_macro = function(_)
                     function(newprompt_bufnr)
                         local selected_register =
                             action_state.get_selected_entry()
-                        local description =
-                            vim.fn.input("Enter description: ", "")
-                        utils.store_register(
-                            macrothis.opts,
-                            selected_register.value.label,
-                            description
-                        )
-                        actions.close(newprompt_bufnr)
+                        vim.ui.input({
+                            prompt = "Enter description: ",
+                        }, function(description)
+                            if description then
+                                utils.store_register(
+                                    macrothis.opts,
+                                    selected_register.value.label,
+                                    description
+                                )
+                                actions.close(newprompt_bufnr)
+                            end
+                        end)
                     end
                 )
                 return true
@@ -193,27 +204,59 @@ local save_macro = function(_)
 end
 
 local run_macro = function(prompt_bufnr)
-    local selected_register = action_state.get_selected_entry()
+    local selected_macro = action_state.get_selected_entry()
 
     actions.close(prompt_bufnr)
 
     utils.run_macro(
         macrothis.opts,
         macrothis.opts.run_register,
-        selected_register.value.label
+        selected_macro.value.label
     )
 end
 
 local run_macro_on_quickfixlist = function(prompt_bufnr)
-    local selected_register = action_state.get_selected_entry()
+    local selected_macro = action_state.get_selected_entry()
 
     actions.close(prompt_bufnr)
 
     utils.run_macro_on_quickfixlist(
         macrothis.opts,
         macrothis.opts.run_register,
-        selected_register.value.label
+        selected_macro.value.label
     )
+end
+
+local rename_macro = function(prompt_bufnr)
+    local selected_register = action_state.get_selected_entry()
+
+    -- TODO would be nice if we didn't close the menu and just updated telescope dynamically
+    vim.ui.input({
+        prompt = "New description: ",
+        default = selected_register.value.label,
+    }, function(newdescription)
+        if newdescription then
+            utils.rename_macro(
+                macrothis.opts,
+                selected_register.value.label,
+                newdescription
+            )
+            actions.close(prompt_bufnr)
+        end
+    end)
+end
+
+local edit_macro = function(prompt_bufnr)
+    local selected_item = action_state.get_selected_entry()
+
+    local bufnr =
+        utils.create_edit_window(macrothis.opts, selected_item.value.label)
+
+    actions.close(prompt_bufnr)
+
+    local winopts = utils.get_winopts(macrothis.opts)
+    vim.api.nvim_open_win(bufnr, true, winopts)
+    vim.api.nvim_win_set_buf(0, bufnr)
 end
 
 local run = function(opts)
@@ -232,6 +275,8 @@ local run = function(opts)
                 macrothis.telescope_config.mappings.quickfix,
                 run_macro_on_quickfixlist
             )
+            map("i", macrothis.telescope_config.mappings.rename, rename_macro)
+            map("i", macrothis.telescope_config.mappings.edit, edit_macro)
             return true
         end,
     })

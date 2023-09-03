@@ -219,6 +219,57 @@ macrothis.quickfix = function()
     end)
 end
 
+--- Edit macro
+---
+---@usage `require('macrothis').edit()`
+macrothis.edit = function()
+    local menuelem = macrothis.generate_menu_items()
+
+    vim.ui.select(menuelem, {
+        prompt = "Edit",
+        format_item = function(item)
+            return ("%s: %s"):format(item.label, item.value)
+        end,
+    }, function(description, _)
+        if description then
+            local bufnr = utils.create_edit_window(macrothis.opts, description.label)
+
+            local winopts = utils.get_winopts(macrothis.opts)
+            vim.api.nvim_open_win(bufnr, true, winopts)
+            vim.api.nvim_win_set_buf(0, bufnr)
+        end
+    end)
+end
+
+--- Rename macro
+---
+---@usage `require('macrothis').rename()`
+macrothis.rename = function()
+    local menuelem = macrothis.generate_menu_items()
+
+    vim.ui.select(menuelem, {
+        prompt = "Rename",
+        format_item = function(item)
+            return ("%s: %s"):format(item.label, item.value)
+        end,
+    }, function(description, _)
+        if description then
+            vim.ui.input({
+                prompt = "New description: ",
+                default = description.label,
+            }, function(newdescription)
+                if newdescription then
+                    utils.rename_macro(
+                        macrothis.opts,
+                        description.label,
+                        newdescription
+                    )
+                end
+            end)
+        end
+    end)
+end
+
 local generate_register_list = function()
     local registers_table = { '"', "-", "#", "=", "/", "*", "+", ":", ".", "%" }
 
@@ -240,7 +291,13 @@ end
 local default = {
     datafile = vim.fn.stdpath("data") .. "/macrothis.json",
     registers = generate_register_list(),
-    run_register = "z", -- content of register z is replaced when running a macro
+    run_register = "z", -- content of register z is replaced when running/editing a macro
+    editor = { -- Edit window
+        width = 100,
+        height = 2,
+        style = "minimal",
+        border = "rounded",
+    },
 }
 --minidoc_afterlines_end
 
