@@ -1,6 +1,6 @@
 # Macrothis.nvim
 
-Macrothis.nvim was created since I had a basic need for storing and loading macros. A side effect is that it works on all registers.
+Macrothis.nvim was created since I had a basic need for storing and loading macros. A side effect is that it works on all registers. It does most operations on register.
 
 Works with or without telescope.
 
@@ -24,6 +24,7 @@ Works with or without telescope.
         { "<Leader>kkq", function() require('macrothis').quickfix() end, desc = "run macro on all files in quickfix" },
         { "<Leader>kkr", function() require('macrothis').run() end, desc = "run macro" },
         { "<Leader>kks", function() require('macrothis').save() end, desc = "save" }
+        { "<Leader>kkx", function() require('macrothis').register() end, desc = "edit register" }
     }
 },
 ```
@@ -61,6 +62,7 @@ require("telescope").extensions = {
 | &lt;C-q&gt; | Run macro on files in quickfix list |
 | &lt;C-r&gt; | Run macro |
 | &lt;C-s&gt; | Save a macro/register |
+| &lt;C-x&gt; | Edit register |
 
 Shortcuts, sorters and more can be overridden via telescope options for this plugin.
 

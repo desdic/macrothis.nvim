@@ -43,6 +43,13 @@ Using Lazy plugin manager
                 require('macrothis').run()
             end,
             desc = "run macro"
+        },
+        {
+            "<Leader>kkx",
+            function()
+                require('macrothis').register()
+            end,
+            desc = "edit register"
         }
     }
 },
@@ -105,6 +112,14 @@ Usage~
 `require('macrothis').rename()`
 
 ------------------------------------------------------------------------------
+                                                          *macrothis.register()*
+                             `macrothis.register`()
+Modify register
+
+Usage~
+require('macrothis').register()
+
+------------------------------------------------------------------------------
                                                                        *default*
                                    `default`
 Default options
@@ -138,6 +153,7 @@ Default telescope options
           rename = "<C-n>",
           edit = "<C-e>",
           quickfix = "<C-q>",
+          register = "<C-x>",
       },
       sorter = sorters.get_generic_fuzzy_sorter,
       items_display = {

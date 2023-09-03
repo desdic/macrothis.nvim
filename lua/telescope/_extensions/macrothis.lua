@@ -23,6 +23,7 @@ local default_telescope = {
         rename = "<C-n>",
         edit = "<C-e>",
         quickfix = "<C-q>",
+        register = "<C-x>",
     },
     sorter = sorters.get_generic_fuzzy_sorter,
     items_display = {
@@ -259,6 +260,51 @@ local edit_macro = function(prompt_bufnr)
     vim.api.nvim_win_set_buf(0, bufnr)
 end
 
+local edit_register = function(_)
+    local opts = macrothis.telescope_config.opts
+    opts["ngram_len"] = 1 -- make sure we sort based on register name which is only one char
+
+    pickers
+        .new({}, {
+            prompt_title = "Edit register",
+            finder = generate_new_finder_registers(),
+            sorter = macrothis.telescope_config.sorter(opts),
+            attach_mappings = function(_, map)
+                map(
+                    "i",
+                    macrothis.telescope_config.mappings.load,
+                    function(prompt_bufnr)
+                        local selected_register =
+                            action_state.get_selected_entry()
+
+                        local bufnr = utils.create_edit_register(
+                            selected_register.value.label
+                        )
+
+                        actions.close(prompt_bufnr)
+
+                        local winopts = utils.get_winopts(macrothis.opts)
+                        vim.api.nvim_open_win(bufnr, true, winopts)
+                        vim.api.nvim_win_set_buf(0, bufnr)
+
+                        vim.api.nvim_feedkeys(
+                            vim.api.nvim_replace_termcodes(
+                                "<ESC>",
+                                true,
+                                false,
+                                true
+                            ),
+                            "n",
+                            false
+                        )
+                    end
+                )
+                return true
+            end,
+        })
+        :find()
+end
+
 local run = function(opts)
     macrothis.telescope_config.opts = opts
     local picker = pickers.new(opts, {
@@ -277,6 +323,11 @@ local run = function(opts)
             )
             map("i", macrothis.telescope_config.mappings.rename, rename_macro)
             map("i", macrothis.telescope_config.mappings.edit, edit_macro)
+            map(
+                "i",
+                macrothis.telescope_config.mappings.register,
+                edit_register
+            )
             return true
         end,
     })
