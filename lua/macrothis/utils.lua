@@ -98,6 +98,46 @@ utils.get_winopts = function(opts)
     return winopts
 end
 
+utils.create_edit_register = function(register)
+    local bufnr = vim.api.nvim_create_buf(false, true)
+
+    local entrycontent = vim.fn.getreg(register)
+    local entrytype = vim.fn.getregtype(register)
+
+    entrycontent = type(entrycontent) == "string"
+            and entrycontent:gsub("\n", "\\n")
+        or entrycontent
+
+    vim.api.nvim_buf_set_lines(bufnr, 0, 0, true, { entrycontent })
+
+    vim.api.nvim_buf_set_option(bufnr, "modifiable", true)
+    vim.api.nvim_buf_set_option(bufnr, "buftype", "nofile")
+    vim.api.nvim_buf_set_name(bufnr, "editing " .. register)
+
+    vim.api.nvim_create_autocmd({ "BufWinLeave" }, {
+        callback = function(bufopts)
+            local bufcontent =
+                vim.api.nvim_buf_get_lines(bufopts.buf, 0, -1, true)
+
+            bufcontent = table.concat(bufcontent, "")
+
+            -- Re-add newlines
+            local newcontent = bufcontent:gsub("\\n", "\n")
+
+            vim.fn.setreg(register, newcontent, entrytype)
+
+            vim.api.nvim_buf_set_option(bufnr, "modifiable", false)
+            vim.api.nvim_win_close(0, true)
+            vim.schedule(function()
+                vim.cmd("bdelete! " .. bufnr)
+            end)
+        end,
+        buffer = bufnr,
+    })
+
+    return bufnr
+end
+
 utils.create_edit_window = function(opts, description)
     local data = utils.read_data(opts)
 

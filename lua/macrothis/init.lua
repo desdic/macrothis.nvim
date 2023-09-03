@@ -39,6 +39,13 @@
 ---                 require('macrothis').run()
 ---             end,
 ---             desc = "run macro"
+---         },
+---         {
+---             "<Leader>kkx",
+---             function()
+---                 require('macrothis').register()
+---             end,
+---             desc = "edit register"
 ---         }
 ---     }
 --- },
@@ -232,7 +239,8 @@ macrothis.edit = function()
         end,
     }, function(description, _)
         if description then
-            local bufnr = utils.create_edit_window(macrothis.opts, description.label)
+            local bufnr =
+                utils.create_edit_window(macrothis.opts, description.label)
 
             local winopts = utils.get_winopts(macrothis.opts)
             vim.api.nvim_open_win(bufnr, true, winopts)
@@ -266,6 +274,33 @@ macrothis.rename = function()
                     )
                 end
             end)
+        end
+    end)
+end
+
+--- Modify register
+---
+---@usage require('macrothis').register()
+macrothis.register = function()
+    local registers = macrothis.generate_register_items()
+    vim.ui.select(registers, {
+        prompt = "Edit register",
+        format_item = function(item)
+            return ("%s: %s: %s"):format(item.label, item.value, item.type)
+        end,
+    }, function(register, _)
+        if register then
+            local bufnr = utils.create_edit_register(register.label)
+
+            local winopts = utils.get_winopts(macrothis.opts)
+            vim.api.nvim_open_win(bufnr, true, winopts)
+            vim.api.nvim_win_set_buf(0, bufnr)
+
+            vim.api.nvim_feedkeys(
+                vim.api.nvim_replace_termcodes("<ESC>", true, false, true),
+                "n",
+                false
+            )
         end
     end)
 end
