@@ -36,6 +36,17 @@ utils.store_register = function(opts, register, description)
     utils.save_data(opts, data)
 end
 
+utils.rename_macro = function(opts, olddescription, newdescription)
+    local data = utils.read_data(opts)
+
+    data[newdescription] = {}
+    data[newdescription]["value"] = data[olddescription]["value"]
+    data[newdescription]["type"] = data[olddescription]["type"]
+    data[olddescription] = nil
+
+    utils.save_data(opts, data)
+end
+
 utils.load_register = function(opts, register, description)
     local data = utils.read_data(opts)
     local content = data[description]
@@ -66,6 +77,71 @@ utils.run_macro_on_quickfixlist = function(opts, register, description)
         "n",
         false
     )
+end
+
+utils.get_winopts = function(opts)
+    local width = opts.editor.width
+    local height = opts.editor.height
+
+    local ui = vim.api.nvim_list_uis()[1]
+    local winopts = {
+        relative = "editor",
+        width = width,
+        height = height,
+        col = (ui.width - width) / 2,
+        row = (ui.height - height) / 2,
+        style = opts.editor.style,
+        border = opts.editor.border,
+        focusable = true,
+    }
+
+    return winopts
+end
+
+utils.create_edit_window = function(opts, description)
+    local data = utils.read_data(opts)
+    print(vim.inspect(description))
+
+    local entrylabel = description
+    local entrycontent = base64.dec(data[entrylabel]["value"])
+    local entrytype = data[entrylabel]["type"]
+
+    local bufnr = vim.api.nvim_create_buf(false, true)
+
+    -- Replace newlines if found (telescope does not do multi line)
+    entrycontent = type(entrycontent) == "string"
+            and entrycontent:gsub("\n", "\\n")
+        or entrycontent
+
+    vim.api.nvim_buf_set_lines(bufnr, 0, 0, true, { entrycontent })
+
+    vim.api.nvim_buf_set_option(bufnr, "modifiable", true)
+    vim.api.nvim_buf_set_option(bufnr, "buftype", "nofile")
+    vim.api.nvim_buf_set_name(bufnr, entrylabel)
+
+    vim.api.nvim_create_autocmd({ "BufWinLeave" }, {
+        callback = function(bufopts)
+            local bufcontent =
+                vim.api.nvim_buf_get_lines(bufopts.buf, 0, -1, true)
+
+            bufcontent = table.concat(bufcontent, "")
+
+            -- Re-add newlines
+            local newcontent = bufcontent:gsub("\\n", "\n")
+
+            vim.fn.setreg(opts.run_register, newcontent, entrytype)
+            utils.store_register(opts, opts.run_register, entrylabel)
+
+            vim.api.nvim_buf_set_option(bufnr, "modifiable", false)
+            vim.api.nvim_win_close(0, true)
+            vim.schedule(function()
+                vim.cmd("bdelete! " .. bufnr)
+            end)
+        end,
+        buffer = bufnr,
+    })
+
+    return bufnr
 end
 
 return utils
