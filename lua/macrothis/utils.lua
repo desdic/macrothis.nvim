@@ -100,7 +100,6 @@ end
 
 utils.create_edit_window = function(opts, description)
     local data = utils.read_data(opts)
-    print(vim.inspect(description))
 
     local entrylabel = description
     local entrycontent = base64.dec(data[entrylabel]["value"])
