@@ -4,7 +4,7 @@ Macrothis.nvim was created since I had a basic need for storing and loading macr
 
 Works with or without telescope.
 
-[![Macrothis.nvim demo](https://www.youtube.com/watch?v=d2uj8uP80OE/0.jpg)](https://www.youtube.com/watch?v=d2uj8uP80OE) "Macrothis.nvim demo"
+[![Macrothis.nvim demo](https://www.youtube.com/watch?v=d2uj8uP80OE/0.jpg)](https://www.youtube.com/watch?v=d2uj8uP80OE "Macrothis.nvim demo")
 
 ## Requirements
 
