@@ -50,6 +50,20 @@ Using Lazy plugin manager
                 require('macrothis').register()
             end,
             desc = "edit register"
+        },
+        {
+            "<Leader>kkp",
+            function()
+                require('macrothis').copy_register_printable()
+            end,
+            desc = "copy register as printable"
+        },
+        {
+            "<Leader>kkm",
+            function()
+                require('macrothis').copy_macro_printable()
+            end,
+            desc = "copy macro as printable"
         }
     }
 },
@@ -120,6 +134,22 @@ Usage~
 require('macrothis').register()
 
 ------------------------------------------------------------------------------
+                                           *macrothis.copy_register_printable()*
+                     `macrothis.copy_register_printable`()
+Copy register as printable
+
+Usage~
+require('macrothis').copy_register_printable()
+
+------------------------------------------------------------------------------
+                                              *macrothis.copy_macro_printable()*
+                       `macrothis.copy_macro_printable`()
+Copy macro as printable
+
+Usage~
+require('macrothis').copy_macro_printable()
+
+------------------------------------------------------------------------------
                                                                        *default*
                                    `default`
 Default options
@@ -134,6 +164,8 @@ Default options
           style = "minimal",
           border = "rounded",
       },
+      clipboard_register = '"',
+      default_register = "", -- Use this register when loading a macro (will never prompt for register if set)
   }
 <
 
@@ -154,6 +186,7 @@ Default telescope options
           edit = "<C-e>",
           quickfix = "<C-q>",
           register = "<C-x>",
+          copy_macro = "<C-c>",
       },
       sorter = sorters.get_generic_fuzzy_sorter,
       items_display = {
