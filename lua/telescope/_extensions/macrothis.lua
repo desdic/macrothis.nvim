@@ -120,6 +120,17 @@ end
 local load_macro = function(_)
     local selected_macro = action_state.get_selected_entry()
 
+    if macrothis.opts.default_register ~= "" then
+        utils.load_register(
+            macrothis.opts,
+            macrothis.opts.default_register,
+            selected_macro.value.label
+        )
+
+        actions.close(vim.api.nvim_get_current_buf())
+        return
+    end
+
     local opts = macrothis.telescope_config.opts
     opts["ngram_len"] = 1 -- make sure we sort based on register name which is only one char
 

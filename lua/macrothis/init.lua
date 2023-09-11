@@ -149,6 +149,15 @@ macrothis.load = function()
         end,
     }, function(description, _)
         if description then
+            if macrothis.opts.default_register ~= "" then
+                utils.load_register(
+                    macrothis.opts,
+                    macrothis.opts.default_register,
+                    description.label
+                )
+                return
+            end
+
             local registers = macrothis.generate_register_items()
             vim.ui.select(registers, {
                 prompt = "Load to which register?",
@@ -390,6 +399,7 @@ local default = {
         border = "rounded",
     },
     clipboard_register = '"',
+    default_register = "", -- Use this register when loading a macro (will never prompt for register if set)
 }
 --minidoc_afterlines_end
 
