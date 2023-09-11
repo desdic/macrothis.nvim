@@ -46,6 +46,20 @@
 ---                 require('macrothis').register()
 ---             end,
 ---             desc = "edit register"
+---         },
+---         {
+---             "<Leader>kkp",
+---             function()
+---                 require('macrothis').copy_register_printable()
+---             end,
+---             desc = "copy register as printable"
+---         },
+---         {
+---             "<Leader>kkm",
+---             function()
+---                 require('macrothis').copy_macro_printable()
+---             end,
+---             desc = "copy macro as printable"
 ---         }
 ---     }
 --- },
@@ -305,6 +319,48 @@ macrothis.register = function()
     end)
 end
 
+--- Copy register as printable
+---
+---@usage require('macrothis').copy_register_printable()
+macrothis.copy_register_printable = function()
+    local registers = macrothis.generate_register_items()
+    vim.ui.select(registers, {
+        prompt = "Copy register as printable",
+        format_item = function(item)
+            return ("%s: %s: %s"):format(item.label, item.value, item.type)
+        end,
+    }, function(register, _)
+        if register then
+            vim.fn.setreg(
+                macrothis.opts.clipboard_register,
+                utils.key_translation(register.value)
+            )
+            vim.notify("Copied to clipboard")
+        end
+    end)
+end
+
+--- Copy macro as printable
+---
+---@usage require('macrothis').copy_macro_printable()
+macrothis.copy_macro_printable = function()
+    local registers = macrothis.generate_menu_items()
+    vim.ui.select(registers, {
+        prompt = "Copy macro as printable",
+        format_item = function(item)
+            return ("%s: %s"):format(item.label, item.value)
+        end,
+    }, function(macro, _)
+        if macro then
+            vim.fn.setreg(
+                macrothis.opts.clipboard_register,
+                utils.key_translation(macro.value)
+            )
+            vim.notify("Copied to clipboard")
+        end
+    end)
+end
+
 local generate_register_list = function()
     local registers_table = { '"', "-", "#", "=", "/", "*", "+", ":", ".", "%" }
 
@@ -333,6 +389,7 @@ local default = {
         style = "minimal",
         border = "rounded",
     },
+    clipboard_register = '"',
 }
 --minidoc_afterlines_end
 

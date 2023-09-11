@@ -24,6 +24,7 @@ local default_telescope = {
         edit = "<C-e>",
         quickfix = "<C-q>",
         register = "<C-x>",
+        copy_macro = "<C-c>",
     },
     sorter = sorters.get_generic_fuzzy_sorter,
     items_display = {
@@ -299,10 +300,26 @@ local edit_register = function(_)
                         )
                     end
                 )
+                map("i", "<C-c>", function(prompt_bufnr)
+                    local selected_register = action_state.get_selected_entry()
+                    local printable =
+                        utils.key_translation(selected_register.value.value)
+                    vim.fn.setreg(macrothis.opts.clipboard_register, printable)
+                    vim.notify("Copied to clipboard")
+                    actions.close(prompt_bufnr)
+                end)
                 return true
             end,
         })
         :find()
+end
+
+local copy_printable = function(prompt_bufnr)
+    local selected_macro = action_state.get_selected_entry()
+    local printable = utils.key_translation(selected_macro.value.value)
+    vim.fn.setreg(macrothis.opts.clipboard_register, printable)
+    vim.notify("Copied to clipboard")
+    actions.close(prompt_bufnr)
 end
 
 local run = function(opts)
@@ -327,6 +344,11 @@ local run = function(opts)
                 "i",
                 macrothis.telescope_config.mappings.register,
                 edit_register
+            )
+            map(
+                "i",
+                macrothis.telescope_config.mappings.copy_macro,
+                copy_printable
             )
             return true
         end,

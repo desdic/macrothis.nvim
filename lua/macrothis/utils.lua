@@ -1,6 +1,11 @@
 local utils = {}
 
 local base64 = require("macrothis.base64")
+
+utils.key_translation = function(data)
+    return vim.fn.keytrans(data)
+end
+
 utils.save_data = function(opts, data)
     local content = vim.fn.json_encode(data)
     local fd = io.open(opts.datafile, "w")

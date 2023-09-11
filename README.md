@@ -27,6 +27,8 @@ Works with or without telescope.
         { "<Leader>kkr", function() require('macrothis').run() end, desc = "run macro" },
         { "<Leader>kks", function() require('macrothis').save() end, desc = "save" }
         { "<Leader>kkx", function() require('macrothis').register() end, desc = "edit register" }
+        { "<Leader>kkp", function() require('macrothis').copy_register_printable() end, desc = "Copy register as printable" }
+        { "<Leader>kkm", function() require('macrothis').copy_macro_printable() end, desc = "Copy macro as printable" }
     }
 },
 ```
@@ -58,13 +60,14 @@ require("telescope").extensions = {
 | Shortcut | Description |
 | :--- | :--- |
 | &lt;CR&gt; | Load selected entry into register |
+| &lt;C-c&gt; | Copy macro as printable |
 | &lt;C-d&gt; | Delete selected entry or delete all marked entries |
 | &lt;C-e&gt; | Edit content of macro |
 | &lt;C-n&gt; | Rename selected entry |
 | &lt;C-q&gt; | Run macro on files in quickfix list |
 | &lt;C-r&gt; | Run macro |
 | &lt;C-s&gt; | Save a macro/register |
-| &lt;C-x&gt; | Edit register |
+| &lt;C-x&gt; | Edit register (&lt;C-x&gt; can be used to copy the register as printable)|
 
 Shortcuts, sorters and more can be overridden via telescope options for this plugin.
 
