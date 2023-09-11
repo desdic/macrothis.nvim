@@ -67,7 +67,7 @@ require("telescope").extensions = {
 | &lt;C-q&gt; | Run macro on files in quickfix list |
 | &lt;C-r&gt; | Run macro |
 | &lt;C-s&gt; | Save a macro/register |
-| &lt;C-x&gt; | Edit register (&lt;C-x&gt; can be used to copy the register as printable)|
+| &lt;C-x&gt; | Edit register (&lt;C-c&gt; can be used to copy the register as printable)|
 
 Shortcuts, sorters and more can be overridden via telescope options for this plugin.
 
