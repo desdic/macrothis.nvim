@@ -33,6 +33,8 @@ Works with or without telescope.
 },
 ```
 
+See [documentation](doc/macrothis.txt) for defaults
+
 ## Telescope
 
 ### Enable extension
