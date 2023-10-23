@@ -12,6 +12,9 @@ local entry_display = require("telescope.pickers.entry_display")
 local macrothis = require("macrothis")
 local utils = require("macrothis.utils")
 
+-- Forward declare
+local pickerfunc
+
 --- Default telescope options
 ---@eval return MiniDoc.afterlines_to_code(MiniDoc.current.eval_section)
 local default_telescope = {
@@ -25,6 +28,7 @@ local default_telescope = {
         quickfix = "<C-q>",
         register = "<C-x>",
         copy_macro = "<C-c>",
+        help = "<C-h>",
     },
     sorter = sorters.get_generic_fuzzy_sorter,
     items_display = {
@@ -333,8 +337,67 @@ local copy_printable = function(prompt_bufnr)
     actions.close(prompt_bufnr)
 end
 
-local run = function(opts)
-    macrothis.telescope_config.opts = opts
+local help = function(prompt_bufnr)
+    actions.close(prompt_bufnr)
+
+    local opts = utils.get_winopts(macrothis.opts)
+    local entries = {}
+    local translation = {
+        edit = "Edit macro",
+        load = "Load macro",
+        save = "Save a register as a macro",
+        delete = "Delete macro",
+        run = "Run macro",
+        rename = "Rename macro",
+        quickfix = "Run macro on quickfix list",
+        copy_macro = "Copy a macro to a new name",
+        register = "Edit a register",
+    }
+
+    table.insert(entries, "Macrothis help:")
+    table.insert(entries, "")
+
+    local width = 20
+    for key, value in pairs(macrothis.telescope_config.mappings) do
+        local tkey = translation[key] or key
+
+        local entry = value .. ": " .. tkey
+        table.insert(entries, entry)
+
+        if string.len(entry) > width then
+            width = string.len(entry)
+        end
+    end
+
+    local bufnr = vim.api.nvim_create_buf(false, false)
+    vim.api.nvim_buf_set_option(bufnr, "buftype", "nofile")
+    vim.api.nvim_buf_set_option(bufnr, "filetype", "macrothishelp")
+    vim.api.nvim_buf_set_option(bufnr, "bufhidden", "wipe")
+    vim.api.nvim_buf_set_option(bufnr, "swapfile", false)
+
+    vim.api.nvim_buf_set_lines(bufnr, 0, -1, true, entries)
+
+    vim.api.nvim_buf_set_option(bufnr, "modifiable", false)
+
+    opts.style = "minimal"
+    opts.zindex = 200
+    opts.width = width + 5
+    opts.height = #entries
+    local win = vim.api.nvim_open_win(bufnr, true, opts)
+    vim.api.nvim_win_set_buf(win, bufnr)
+
+    -- Return to picker
+    vim.api.nvim_create_autocmd({ "BufWinLeave" }, {
+        callback = function(_)
+            vim.schedule(function()
+                pickerfunc(macrothis.telescope_config.opts)
+            end)
+        end,
+        buffer = bufnr,
+    })
+end
+
+local runpicker = function(opts)
     local picker = pickers.new(opts, {
         prompt_title = "Macro this",
         finder = generate_new_finder_items(opts),
@@ -361,11 +424,18 @@ local run = function(opts)
                 macrothis.telescope_config.mappings.copy_macro,
                 copy_printable
             )
+            map("i", macrothis.telescope_config.mappings.help, help)
             return true
         end,
     })
 
     picker:find()
+end
+pickerfunc = runpicker
+
+local run = function(opts)
+    macrothis.telescope_config.opts = opts
+    pickerfunc(opts)
 end
 
 return telescope.register_extension({
