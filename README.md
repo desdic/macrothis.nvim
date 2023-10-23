@@ -65,6 +65,7 @@ require("telescope").extensions = {
 | &lt;C-c&gt; | Copy macro as printable |
 | &lt;C-d&gt; | Delete selected entry or delete all marked entries |
 | &lt;C-e&gt; | Edit content of macro |
+| &lt;C-h&gt; | Show key bindings |
 | &lt;C-n&gt; | Rename selected entry |
 | &lt;C-q&gt; | Run macro on files in quickfix list |
 | &lt;C-r&gt; | Run macro |
