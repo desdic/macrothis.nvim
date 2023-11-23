@@ -75,7 +75,7 @@ end
 
 utils.run_macro_on_quickfixlist = function(opts, register, description)
     utils.load_register(opts, register, description)
-    vim.cmd(":cfdo norm! @" .. register)
+    vim.cmd(":silent! cfdo norm! @" .. register)
     -- Make sure we are back into normal mode after replacement
     vim.api.nvim_feedkeys(
         vim.api.nvim_replace_termcodes("<ESC>", true, false, true),
