@@ -170,7 +170,8 @@ local delete_macro = function(prompt_bufnr)
         { prompt = "Confirm deletion? [y/n]: " },
         function(confirmation)
             if
-                string.len(confirmation) == 0
+                not confirmation
+                or string.len(confirmation) == 0
                 or string.sub(string.lower(confirmation), 0, 1) ~= "y"
             then
                 print("cancelled")
