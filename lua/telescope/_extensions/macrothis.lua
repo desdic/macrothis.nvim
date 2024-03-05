@@ -185,8 +185,9 @@ local delete_macro = function(prompt_bufnr)
     )
 end
 
-local save_macro = function(_)
+local save_macro = function(prompt_bufnr)
     local opts = macrothis.telescope_config.opts
+    -- TODO would be nice if this returned to the original picker
     opts["ngram_len"] = 1 -- make sure we sort based on register name which is only one char
     pickers
         .new({}, {
@@ -247,18 +248,19 @@ end
 local rename_macro = function(prompt_bufnr)
     local selected_register = action_state.get_selected_entry()
 
-    -- TODO would be nice if we didn't close the menu and just updated telescope dynamically
     vim.ui.input({
         prompt = "New description: ",
         default = selected_register.value.label,
     }, function(newdescription)
         if newdescription then
+            local current_picker = action_state.get_current_picker(prompt_bufnr)
             utils.rename_macro(
                 macrothis.opts,
                 selected_register.value.label,
                 newdescription
             )
-            actions.close(prompt_bufnr)
+
+            current_picker:refresh(generate_new_finder_items(), {})
         end
     end)
 end
@@ -266,14 +268,29 @@ end
 local edit_macro = function(prompt_bufnr)
     local selected_item = action_state.get_selected_entry()
 
-    local bufnr =
-        utils.create_edit_window(macrothis.opts, selected_item.value.label)
+    local label = selected_item.value.label
+    local base64 = require("macrothis.base64")
+    local data = utils.read_data(macrothis.opts)
+    local entrycontent = base64.dec(data[label]["value"])
+    local entrytype = data[label]["type"]
 
-    actions.close(prompt_bufnr)
+    vim.ui.input({
+        prompt = "Edit: ",
+        default = entrycontent,
+    }, function(newcontent)
+        if newcontent then
+            local current_picker = action_state.get_current_picker(prompt_bufnr)
 
-    local winopts = utils.get_winopts(macrothis.opts)
-    vim.api.nvim_open_win(bufnr, true, winopts)
-    vim.api.nvim_win_set_buf(0, bufnr)
+            vim.fn.setreg(macrothis.opts.run_register, newcontent, entrytype)
+            utils.store_register(
+                macrothis.opts,
+                macrothis.opts.run_register,
+                label
+            )
+
+            current_picker:refresh(generate_new_finder_items(), {})
+        end
+    end)
 end
 
 local edit_register = function(_)
@@ -288,41 +305,51 @@ local edit_register = function(_)
             attach_mappings = function(_, map)
                 map(
                     "i",
-                    macrothis.telescope_config.mappings.load,
+                    macrothis.telescope_config.mappings.edit,
                     function(prompt_bufnr)
                         local selected_register =
                             action_state.get_selected_entry()
 
-                        local bufnr = utils.create_edit_register(
-                            selected_register.value.label
-                        )
+                        local register = selected_register.value.label
+                        local entrycontent = vim.fn.getreg(register)
+                        local entrytype = vim.fn.getregtype(register)
 
-                        actions.close(prompt_bufnr)
+                        vim.ui.input({
+                            prompt = "Edit: ",
+                            default = entrycontent,
+                        }, function(newcontent)
+                            if newcontent then
+                                local current_picker =
+                                    action_state.get_current_picker(
+                                        prompt_bufnr
+                                    )
 
-                        local winopts = utils.get_winopts(macrothis.opts)
-                        vim.api.nvim_open_win(bufnr, true, winopts)
-                        vim.api.nvim_win_set_buf(0, bufnr)
+                                vim.fn.setreg(register, newcontent, entrytype)
 
-                        vim.api.nvim_feedkeys(
-                            vim.api.nvim_replace_termcodes(
-                                "<ESC>",
-                                true,
-                                false,
-                                true
-                            ),
-                            "n",
-                            false
-                        )
+                                current_picker:refresh(
+                                    generate_new_finder_registers(),
+                                    {}
+                                )
+                            end
+                        end)
                     end
                 )
-                map("i", "<C-c>", function(prompt_bufnr)
-                    local selected_register = action_state.get_selected_entry()
-                    local printable =
-                        utils.key_translation(selected_register.value.value)
-                    vim.fn.setreg(macrothis.opts.clipboard_register, printable)
-                    vim.notify("Copied to clipboard")
-                    actions.close(prompt_bufnr)
-                end)
+                map(
+                    "i",
+                    macrothis.telescope_config.mappings.load,
+                    function(prompt_bufnr)
+                        local selected_register =
+                            action_state.get_selected_entry()
+                        local printable =
+                            utils.key_translation(selected_register.value.value)
+                        vim.fn.setreg(
+                            macrothis.opts.clipboard_register,
+                            printable
+                        )
+                        vim.notify("Copied to clipboard")
+                        actions.close(prompt_bufnr)
+                    end
+                )
                 return true
             end,
         })
