@@ -115,8 +115,8 @@ utils.create_edit_register = function(register)
 
     vim.api.nvim_buf_set_lines(bufnr, 0, 0, true, { entrycontent })
 
-    vim.api.nvim_buf_set_option(bufnr, "modifiable", true)
-    vim.api.nvim_buf_set_option(bufnr, "buftype", "nofile")
+    vim.api.nvim_set_option_value("modifiable", true, { buf = bufnr })
+    vim.api.nvim_set_option_value("buftype", "nofile", { buf = bufnr })
     vim.api.nvim_buf_set_name(bufnr, "editing " .. register)
 
     vim.api.nvim_create_autocmd({ "BufWinLeave" }, {
@@ -124,14 +124,14 @@ utils.create_edit_register = function(register)
             local bufcontent =
                 vim.api.nvim_buf_get_lines(bufopts.buf, 0, -1, true)
 
-            bufcontent = table.concat(bufcontent, "")
+            local bbufcontent = table.concat(bufcontent, "")
 
             -- Re-add newlines
-            local newcontent = bufcontent:gsub("\\n", "\n")
+            local newcontent = bbufcontent:gsub("\\n", "\n")
 
             vim.fn.setreg(register, newcontent, entrytype)
 
-            vim.api.nvim_buf_set_option(bufnr, "modifiable", false)
+            vim.api.nvim_set_option_value("modifiable", false, { buf = bufnr })
             vim.api.nvim_win_close(0, true)
             vim.schedule(function()
                 vim.cmd("bdelete! " .. bufnr)
@@ -159,8 +159,8 @@ utils.create_edit_window = function(opts, description)
 
     vim.api.nvim_buf_set_lines(bufnr, 0, 0, true, { entrycontent })
 
-    vim.api.nvim_buf_set_option(bufnr, "modifiable", true)
-    vim.api.nvim_buf_set_option(bufnr, "buftype", "nofile")
+    vim.api.nvim_set_option_value("modifiable", true, { buf = bufnr })
+    vim.api.nvim_set_option_value("buftype", "nofile", { buf = bufnr })
     vim.api.nvim_buf_set_name(bufnr, entrylabel)
 
     vim.api.nvim_create_autocmd({ "BufWinLeave" }, {
@@ -168,15 +168,15 @@ utils.create_edit_window = function(opts, description)
             local bufcontent =
                 vim.api.nvim_buf_get_lines(bufopts.buf, 0, -1, true)
 
-            bufcontent = table.concat(bufcontent, "")
+            local bbufcontent = table.concat(bufcontent, "")
 
             -- Re-add newlines
-            local newcontent = bufcontent:gsub("\\n", "\n")
+            local newcontent = bbufcontent:gsub("\\n", "\n")
 
             vim.fn.setreg(opts.run_register, newcontent, entrytype)
             utils.store_register(opts, opts.run_register, entrylabel)
 
-            vim.api.nvim_buf_set_option(bufnr, "modifiable", false)
+            vim.api.nvim_set_option_value("modifiable", false, { buf = bufnr })
             vim.api.nvim_win_close(0, true)
             vim.schedule(function()
                 vim.cmd("bdelete! " .. bufnr)

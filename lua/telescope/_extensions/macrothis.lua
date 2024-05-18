@@ -370,14 +370,17 @@ local help = function(prompt_bufnr)
     end
 
     local bufnr = vim.api.nvim_create_buf(false, false)
-    vim.api.nvim_buf_set_option(bufnr, "buftype", "nofile")
-    vim.api.nvim_buf_set_option(bufnr, "filetype", "macrothishelp")
-    vim.api.nvim_buf_set_option(bufnr, "bufhidden", "wipe")
-    vim.api.nvim_buf_set_option(bufnr, "swapfile", false)
+
+    local options = { buf = bufnr }
+
+    vim.api.nvim_set_option_value("buftype", "nofile", options)
+    vim.api.nvim_set_option_value("filetype", "macrothishelp", options)
+    vim.api.nvim_set_option_value("bufhidden", "wipe", options)
+    vim.api.nvim_set_option_value("swapfile", false, options)
 
     vim.api.nvim_buf_set_lines(bufnr, 0, -1, true, entries)
 
-    vim.api.nvim_buf_set_option(bufnr, "modifiable", false)
+    vim.api.nvim_set_option_value("modifiable", false, options)
 
     opts.style = "minimal"
     opts.zindex = 200
