@@ -3,7 +3,7 @@
                                                                 *macrothis.nvim*
 Macrothis.nvim is a plugin for saving and loading registers/macros
 
-Usage~
+Usage ~
 Using Lazy plugin manager
 {
     "desdic/macrothis.nvim",
@@ -74,7 +74,7 @@ Using Lazy plugin manager
                                `macrothis.save`()
 Save a macro/register
 
-Usage~
+Usage ~
 `require('macrothis').save()`
 
 ------------------------------------------------------------------------------
@@ -82,7 +82,7 @@ Usage~
                                `macrothis.load`()
 Load a macro/register
 
-Usage~
+Usage ~
 `require('macrothis').load()`
 
 ------------------------------------------------------------------------------
@@ -90,7 +90,7 @@ Usage~
                               `macrothis.delete`()
 Delete a macro/register
 
-Usage~
+Usage ~
 `require('macrothis').delete()`
 
 ------------------------------------------------------------------------------
@@ -98,7 +98,7 @@ Usage~
                                `macrothis.run`()
 Run macro
 
-Usage~
+Usage ~
 `require('macrothis').run()`
 
 ------------------------------------------------------------------------------
@@ -106,7 +106,7 @@ Usage~
                              `macrothis.quickfix`()
 Run macro on all in quickfix list
 
-Usage~
+Usage ~
 `require('macrothis').quickfix()`
 
 ------------------------------------------------------------------------------
@@ -114,7 +114,7 @@ Usage~
                                `macrothis.edit`()
 Edit macro
 
-Usage~
+Usage ~
 `require('macrothis').edit()`
 
 ------------------------------------------------------------------------------
@@ -122,7 +122,7 @@ Usage~
                               `macrothis.rename`()
 Rename macro
 
-Usage~
+Usage ~
 `require('macrothis').rename()`
 
 ------------------------------------------------------------------------------
@@ -130,7 +130,7 @@ Usage~
                              `macrothis.register`()
 Modify register
 
-Usage~
+Usage ~
 require('macrothis').register()
 
 ------------------------------------------------------------------------------
@@ -138,7 +138,7 @@ require('macrothis').register()
                      `macrothis.copy_register_printable`()
 Copy register as printable
 
-Usage~
+Usage ~
 require('macrothis').copy_register_printable()
 
 ------------------------------------------------------------------------------
@@ -146,7 +146,7 @@ require('macrothis').copy_register_printable()
                        `macrothis.copy_macro_printable`()
 Copy macro as printable
 
-Usage~
+Usage ~
 require('macrothis').copy_macro_printable()
 
 ------------------------------------------------------------------------------
