@@ -8,7 +8,7 @@ Works with or without telescope.
 
 ## Requirements
 
-[Neovim 0.9+](https://github.com/neovim/neovim)
+[Neovim 0.10+](https://github.com/neovim/neovim)
 
 [Telescope](https://github.com/nvim-telescope/telescope.nvim) (optional)
 
